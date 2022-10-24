@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using System.Web;
+
 
 namespace PSCGI
 {
@@ -14,9 +11,11 @@ namespace PSCGI
         {
             string defaultHeader = "Content type: text/html" + Environment.NewLine + Environment.NewLine;
             string psargs = "";
+            string psargsErr = "";
             try
             {
-                psargs = HttpUtility.UrlDecode(Environment.GetEnvironmentVariable("QUERY_STRING"));
+                psargs = Environment.GetEnvironmentVariable("QUERY_STRING");
+                psargs = Uri.UnescapeDataString(psargs);
                 psargs = psargs.Replace("\"", "\"\"");
                 string[] psargarray = psargs.Split('&');
                 for (int i = 0; i < psargarray.Length; i++)
@@ -25,9 +24,9 @@ namespace PSCGI
                 }
                 psargs = String.Join(" ", psargarray);
             }
-            catch
+            catch(Exception ex)
             {
-
+                psargsErr = ex.Message;
             }
 
             Process cmd = new Process();
@@ -43,20 +42,25 @@ namespace PSCGI
             string OutputBuffer = "";
             string ErrorBuffer = "";
 
+            if(psargsErr != "")
+            {
+                ErrorBuffer += psargsErr + "\n";
+            }
+
             while (!cmd.HasExited)
             {
                 OutputBuffer += cmd.StandardOutput.ReadToEnd();
                 ErrorBuffer += cmd.StandardError.ReadToEnd();
             }
 
-            if (!(Regex.Match(OutputBuffer, "Content-type:.*").Success))
+            OutputBuffer = OutputBuffer.Trim('\r', '\n');
+
+            if (!OutputBuffer.StartsWith("Content-type:"))
             {
                 OutputBuffer = defaultHeader + OutputBuffer;
             }
 
-            //cmd.WaitForExit();
-            OutputBuffer = OutputBuffer.Trim('\r', '\n');
-            if (ErrorBuffer != "")
+                if (ErrorBuffer != "")
             {
                 Console.WriteLine("Content-type: text/plain" + Environment.NewLine);
                 Console.WriteLine("The PowerShell script terminated with the following error:" + Environment.NewLine);
