@@ -55,12 +55,12 @@ namespace PSCGI
 
             OutputBuffer = OutputBuffer.Trim('\r', '\n');
 
-            if (!OutputBuffer.StartsWith("Content-type:"))
+            if (!(Regex.Match(OutputBuffer, "Content-type:.*").Success))
             {
                 OutputBuffer = defaultHeader + OutputBuffer;
             }
 
-                if (ErrorBuffer != "")
+            if (ErrorBuffer != "")
             {
                 Console.WriteLine("Content-type: text/plain" + Environment.NewLine);
                 Console.WriteLine("The PowerShell script terminated with the following error:" + Environment.NewLine);
