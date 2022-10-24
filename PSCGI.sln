@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32414.318
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSCGI", "PSCGI.csproj", "{FCCFE200-D266-4711-93D4-184DA8EB0EAA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FCCFE200-D266-4711-93D4-184DA8EB0EAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCCFE200-D266-4711-93D4-184DA8EB0EAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCCFE200-D266-4711-93D4-184DA8EB0EAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCCFE200-D266-4711-93D4-184DA8EB0EAA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {01A6AF7A-667F-4655-BBA8-723A4D4AF8AD}
+	EndGlobalSection
+EndGlobal
