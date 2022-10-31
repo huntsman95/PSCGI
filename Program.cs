@@ -11,9 +11,10 @@ namespace PSCGI
     {
         static void Main(string[] args)
         {
-            string defaultHeader = "Content type: text/html" + Environment.NewLine + Environment.NewLine;
+            string defaultHeader = "Content-Type: text/html" + Environment.NewLine + Environment.NewLine;
             string psargs = "";
             string psargsErr = "";
+
             try
             {
                 psargs = Environment.GetEnvironmentVariable("QUERY_STRING");
@@ -49,63 +50,38 @@ namespace PSCGI
 
             using (PowerShell PowerShellInst = PowerShell.Create())
             {
-                PowerShellInst.AddScript(System.IO.File.ReadAllText(args[0]));
-                Collection<PSObject> results = PowerShellInst.Invoke();
-
-                // close the runspace
-
-                StringBuilder stringBuilder = new StringBuilder();
-                foreach (PSObject obj in results)
+                PowerShellInst.AddScript(args[0] + " " + psargs, true);
+                try
                 {
-                    stringBuilder.AppendLine(obj.ToString());
-                }
+                    Collection<PSObject> results = PowerShellInst.Invoke();
 
-                OutputBuffer = stringBuilder.ToString();
+                    // close the runspace
+
+                    StringBuilder stringBuilder = new StringBuilder();
+                    foreach (PSObject obj in results)
+                    {
+                        stringBuilder.AppendLine(obj.ToString());
+                    }
+
+                    OutputBuffer = stringBuilder.ToString();
+                }
+                catch (Exception ex)
+                {
+                    //string template = @""
+                    OutputBuffer = ex.Message;
+                }
             }
 
             /// END EXEC SCRIPT SECTION
 
-            //Process cmd = new Process();
-            //cmd.StartInfo.FileName = "powershell.exe";
-            //cmd.StartInfo.Arguments = "-noprofile -file \"" + args[0] + "\" " + psargs;
-            //cmd.StartInfo.RedirectStandardInput = true;
-            //cmd.StartInfo.RedirectStandardOutput = true;
-            //cmd.StartInfo.RedirectStandardError = true;
-            //cmd.StartInfo.CreateNoWindow = true;
-            //cmd.StartInfo.UseShellExecute = false;
-            //cmd.Start();
-            //
-            //string OutputBuffer = "";
-            //string ErrorBuffer = "";
-            //
-            //if(psargsErr != "")
-            //{
-            //    ErrorBuffer += psargsErr + "\n";
-            //}
-            //
-            //while (!cmd.HasExited)
-            //{
-            //    OutputBuffer += cmd.StandardOutput.ReadToEnd();
-            //    ErrorBuffer += cmd.StandardError.ReadToEnd();
-            //}
+                OutputBuffer = OutputBuffer.Trim('\r', '\n');
+                //
+                if (!(Regex.Match(OutputBuffer, "[C,c]ontent-[T,t]ype:.*").Success))
+                {
+                    OutputBuffer = defaultHeader + OutputBuffer;
+                }
 
-                //OutputBuffer = OutputBuffer.Trim('\r', '\n');
-                //
-                //if (!(Regex.Match(OutputBuffer, "Content-type:.*").Success))
-                //{
-                //    OutputBuffer = defaultHeader + OutputBuffer;
-                //}
-                //
-                ////if (ErrorBuffer != "")
-                ////{
-                ////    Console.WriteLine("Content-type: text/plain" + Environment.NewLine);
-                ////    Console.WriteLine("The PowerShell script terminated with the following error:" + Environment.NewLine);
-                ////    Console.Write(ErrorBuffer);
-                ////}
-                //else
-                //{
-                    Console.Write(OutputBuffer);
-                //}
+                Console.Write(OutputBuffer);
         }
     }
 }
