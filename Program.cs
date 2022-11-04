@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Management.Automation;
 using System.Collections.ObjectModel;
